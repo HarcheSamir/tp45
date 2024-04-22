@@ -3,34 +3,49 @@ import 'package:tp45/details.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-class Home extends StatefulWidget {
+class Home extends StatefulWidget  {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<Note> _notes = [];
   Note? _selectedNote ;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
   }
   FlutterTts flutterTts = FlutterTts();
 
   void speak(String text) async {
-
-
+    print('*******************************played');
     await flutterTts.setLanguage('fr-FR');
     await flutterTts.setPitch(1);
     await flutterTts.speak(text);
-
-
   }
 
   void stop() async {
     await flutterTts.stop();
-
   }
+
+  @override
+  void dispose() {
+    stop();
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      print('**********************************************************stopped');
+     stop();
+    }
+  }
+
+
 
 
 
